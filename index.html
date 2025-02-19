@@ -28,7 +28,7 @@
             try {
                 info.innerText += "\nClicked lock";
                 const ndef = new NDEFReader();
-                await ndef.write("Hello world lock!");
+                await ndef.write("lock");
                 info.innerText += "\nClicked lock ok";
             } catch (error) {
                 
@@ -40,9 +40,13 @@
         document.querySelector("#unlockBtn").addEventListener("click", async () => {
 
             try {
+                info.innerText += "\nClicked unlock";
                 const ndef = new NDEFReader();
-                await ndef.write("Hello world unlock!");
+                await ndef.write("unlock");
+                info.innerText += "\nClicked unlock ok";
             } catch (error) {
+                
+                info.innerText += `\nClicked unlock error: ${error.message}`;
             }
         });
     </script>
