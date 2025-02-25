@@ -1,54 +1,138 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 
 <head>
-    <meta charset='utf-8'>
-    <title>NFC Reader</title>
-    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <meta charset="utf-8" />
+    <title>NFC Demo</title>
+    <meta name="viewport" content="initial-scale=1, width=device-width" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <script type="importmap">
+      {
+        "imports": {
+          "react": "https://esm.sh/react@latest",
+          "react-dom": "https://esm.sh/react-dom@latest",
+          "react-dom/client": "https://esm.sh/react-dom@latest/client",
+          "react/jsx-runtime": "https://esm.sh/react@latest/jsx-runtime",
+          "@mui/material": "https://esm.sh/@mui/material@latest?external=react,react-dom"
+        }
+      }
+    </script>
 </head>
 
 <body>
+    <div id="root"></div>
 
-    <h2 style="text-align: center;">NFC Reader</h2>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script type="text/babel" data-type="module">
+        import * as React from 'react';
+        import { createRoot } from 'react-dom/client';
+        import {
+            colors,
+            CssBaseline,
+            ThemeProvider,
+            Typography,
+            Container,
+            createTheme,
+            Box,
+            SvgIcon,
+            ButtonGroup,
+            Button,
+            Link,
+        } from '@mui/material';
 
-    <p id="info"></p>
 
-    <div style="flex-direction: row; place-self: center;">
-        <button id="lockBtn">Lock</button>
-        <button id="unlockBtn">Unlock</button>
-    </div>
-
-
-    <script>
-
-        let info = document.querySelector("#info");
-
-        document.querySelector("#lockBtn").addEventListener("click", async () => {
-
-            try {
-                info.innerText += "\nClicked lock";
-                const ndef = new NDEFReader();
-                await ndef.write("lock");
-                info.innerText += "\nClicked lock ok";
-            } catch (error) {
-                
-                info.innerText += `\nClicked lock error: ${error.message}`;
-            }
+        const theme = createTheme({
+            cssVariables: true,
+            palette: {
+                primary: {
+                    main: '#556cd6',
+                },
+                secondary: {
+                    main: '#19857b',
+                },
+                error: {
+                    main: colors.red.A400,
+                },
+            },
         });
 
 
-        document.querySelector("#unlockBtn").addEventListener("click", async () => {
+        function Copyright() {
+            return (
+                <Typography variant="body2" color="text.secondary" align="center">
+                    {'© '}
+                    {new Date().getFullYear()}
+                </Typography>
+            );
+        }
 
-            try {
-                info.innerText += "\nClicked unlock";
-                const ndef = new NDEFReader();
-                await ndef.write("unlock");
-                info.innerText += "\nClicked unlock ok";
-            } catch (error) {
-                
-                info.innerText += `\nClicked unlock error: ${error.message}`;
-            }
-        });
+        function App() {
+            const [info, setInfo] = React.useState([]);
+
+            const addInfo = text => setInfo(prev => [text,...prev].splice(0, 10));
+
+            const lock = async () => {
+                try {
+                    addInfo("Clicked lock");
+                    
+                    const ndef = new NDEFReader();
+                    await ndef.write("lock");
+                    
+                    addInfo("Clicked lock ok");
+                } catch (error) {
+
+                    addInfo(`Clicked lock error: ${error.message}`);
+                }
+            };
+
+            const unlock = async () => {
+                try {
+                    addInfo("Clicked unlock");
+                    const ndef = new NDEFReader();
+                    await ndef.write("unlock");
+                    addInfo("Clicked unlock ok");
+                } catch (error) {
+
+                    addInfo(`Clicked unlock error: ${error.message}`);
+                }
+            };
+
+            return (
+                <Container maxWidth="sm">
+                    <Box sx={{ my: 4 }}>
+                        <Typography variant="h4" component="h1" sx={{ mb: 2, textAlign: 'center' }}>
+                            NFC Demo
+                        </Typography>
+                        <Typography variant="h6" component="h1" sx={{ mb: 2, textAlign: 'center' }}>
+                            Please tap a tag to read/write data
+                        </Typography>
+
+                        <ButtonGroup size="large" sx={{ m: 2, display: 'flex', justifyContent: 'center' }}>
+                            <Button onClick={lock}>Lock</Button>
+                            <Button onClick={unlock}>Unlock</Button>
+                        </ButtonGroup>
+
+                        {info.map((item, index) => (
+                            <Typography key={index} variant="body1" component="p" sx={{ mb: 2 }}>
+                                {item}
+                            </Typography>
+                        ))}
+                        <Copyright />
+                    </Box>
+                </Container>
+            );
+        }
+
+        const root = createRoot(document.getElementById('root'));
+        root.render(
+            <ThemeProvider theme={theme}>
+                <CssBaseline />
+                <App />
+            </ThemeProvider>,
+        );
     </script>
 </body>
 
